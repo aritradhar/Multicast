@@ -22,8 +22,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 
-import javax.imageio.ImageIO;
-
 import Constants.ENV;
 
 public class ImageBroadCastServer 
@@ -60,22 +58,19 @@ public class ImageBroadCastServer
 	        	
 	            for (;;) 
 	            {
-	            	if(i == this.imagedata.length - 1)
+	            	if(i == this.imagedata.length)
 	            		i = 0;
 	            	
 	                byte[] b = this.imagedata[i];
 	                
 	                DatagramPacket msgPacket = new DatagramPacket(b,
 	                        b.length, addr, ENV.PORT);
-	                serverSocket.send(msgPacket);
-	     
-	                if(i % 2 == 0)
-	                	System.out.println("Sent image " + i);
-	                else
-	                	System.out.println("Sent Hash " + i);
-	                
+	                serverSocket.send(msgPacket);     
+
+	                System.out.println("Sent image " + i);
+                
 	                i++;
-	                Thread.sleep(10);
+	                Thread.sleep(ENV.TRANSMISSION_INTERVAL);
 	            }
 	        } 
 	        

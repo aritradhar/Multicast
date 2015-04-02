@@ -25,9 +25,6 @@ import java.security.NoSuchAlgorithmException;
 public class ImageLoad 
 {
 	
-	public static byte[] FILE_MARKER = {0x00};
-	public static byte[] HASH_MARKER = {0x01};
-	
 	/**
 	 * Send the byte[] of the image and the hash,
 	 * 0 at the front is file, 1 at the front is hash 
@@ -45,29 +42,25 @@ public class ImageLoad
 		}
 		
 		File[] files = f.listFiles();
-		byte[][] out = new byte[files.length * 2][];
+		byte[][] out = new byte[files.length][];
 		
 		int i = 0;
-		byte[] filebytes, destFile, hashbytes, destHash = null;
+		byte[] filebytes, destFile, hashbytes = null;
 		
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		
 		for(File file : files)
 		{		
+			
 			filebytes = Files.readAllBytes(file.toPath());
-			destFile = new byte[filebytes.length + 1];
-			
-			System.arraycopy(FILE_MARKER, 0, destFile, 0, 1);
-			System.arraycopy(filebytes, 0, destFile, 1, filebytes.length);
-			
 			hashbytes = md.digest(filebytes);
-			destHash = new byte[hashbytes.length + 1];
+			destFile = new byte [filebytes.length + hashbytes.length];
 			
-			System.arraycopy(HASH_MARKER, 0, destHash, 0, 1);
-			System.arraycopy(hashbytes, 0, destHash, 1, hashbytes.length);
+			System.arraycopy(filebytes, 0, destFile, 0, filebytes.length);
+			System.arraycopy(hashbytes, 0, destFile, filebytes.length, hashbytes.length);
 			
 			out[i++] = destFile;
-			out[i++] = destHash;
+
 			
 			md.reset();
 		}
