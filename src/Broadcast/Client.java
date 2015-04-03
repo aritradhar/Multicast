@@ -20,6 +20,7 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public class Client
     {
         InetAddress address = InetAddress.getByName(ENV.INET_ADDR);
         
-        byte[] buf = new byte[65556];
+        byte[] buf = new byte[64 * 1024 * 8];
 
         try (MulticastSocket clientSocket = new MulticastSocket(ENV.PORT))
         {
@@ -40,16 +41,24 @@ public class Client
      
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             
+            System.out.println("Started...");
             while (true) 
             {
                 DatagramPacket msgPacket = new DatagramPacket(buf, buf.length);
                 clientSocket.receive(msgPacket);
                 
-                byte[] imgBytes = new byte[buf.length - 32];
+                byte[] lenbytes = new byte[4];               
                 byte[] hashBytes = new byte[32];
                 
-                System.arraycopy(buf, 0, imgBytes, 0, buf.length - 32);
-                System.arraycopy(buf, buf.length - 32, hashBytes, 0, 32);
+                System.arraycopy(buf, 0, lenbytes, 0, 4);
+                ByteBuffer br = ByteBuffer.wrap(lenbytes);
+                int len = br.getInt();
+                
+                System.out.println(len);
+                byte[] imgBytes = new byte[len];
+                System.arraycopy(buf, 4, imgBytes, 0, len);
+                System.out.println("# " + imgBytes.length);
+                System.arraycopy(buf, 4 + len, hashBytes, 0, 32);
                 
                 byte[] d = md.digest(imgBytes);
                 

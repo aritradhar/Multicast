@@ -66,6 +66,8 @@ public class ImageBroadCastServer
 	                DatagramPacket msgPacket = new DatagramPacket(b,
 	                        b.length, addr, ENV.PORT);
 	                serverSocket.send(msgPacket);     
+	                
+	                System.out.println(b.length);
 
 	                System.out.println("Sent image " + i);
                 

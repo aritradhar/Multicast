@@ -19,5 +19,5 @@ public class ENV
 {
 	public final static String INET_ADDR = "224.0.0.3";
     public final static int PORT = 8888;
-    public final static int TRANSMISSION_INTERVAL = 5000;
+    public final static int TRANSMISSION_INTERVAL = 1000;
 }

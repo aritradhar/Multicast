@@ -17,6 +17,7 @@ package Broadcast;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -53,11 +54,19 @@ public class ImageLoad
 		{		
 			
 			filebytes = Files.readAllBytes(file.toPath());
-			hashbytes = md.digest(filebytes);
-			destFile = new byte [filebytes.length + hashbytes.length];
 			
-			System.arraycopy(filebytes, 0, destFile, 0, filebytes.length);
-			System.arraycopy(hashbytes, 0, destFile, filebytes.length, hashbytes.length);
+			ByteBuffer br = ByteBuffer.allocate(4);
+			br.putInt(filebytes.length);
+			byte[] lenbytes = br.array();
+			
+			hashbytes = md.digest(filebytes);
+			
+			//legth || payload || hash
+			destFile = new byte [lenbytes.length + filebytes.length + hashbytes.length];
+			
+			System.arraycopy(lenbytes, 0, destFile, 0, lenbytes.length);
+			System.arraycopy(filebytes, 0, destFile, lenbytes.length, filebytes.length);
+			System.arraycopy(hashbytes, 0, destFile, lenbytes.length + filebytes.length, hashbytes.length);
 			
 			out[i++] = destFile;
 
