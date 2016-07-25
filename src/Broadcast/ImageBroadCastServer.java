@@ -51,7 +51,6 @@ public class ImageBroadCastServer
 	private void doBroadcast() throws UnknownHostException, InterruptedException
 	{
 		   InetAddress addr = InetAddress.getByName(ENV.INET_ADDR);
-		     
 	        try (DatagramSocket serverSocket = new DatagramSocket()) 
 	        {
 	        	int i = 0;
@@ -65,6 +64,10 @@ public class ImageBroadCastServer
 	                
 	                DatagramPacket msgPacket = new DatagramPacket(b,
 	                        b.length, addr, ENV.PORT);
+	                
+	                serverSocket.setBroadcast(true);
+	                serverSocket.setSendBufferSize(b.length);
+	                
 	                serverSocket.send(msgPacket);     
 	                
 	                System.out.println(b.length);
